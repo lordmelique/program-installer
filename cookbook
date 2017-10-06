@@ -1,0 +1,238 @@
+#!/bin/sh
+
+
+#GLOBAL VARIABLES
+RD='\033[0;33m'
+WC='\033[0m' # No Color
+BOLD=$(tput bold)
+NORMAL=$(tput sgr0)
+
+
+INSTALL_MONGODB=0
+INSTALL_PHPSTORM=0
+INSTALL_WEBSTORM=0
+INSTALL_PYCHARM=0
+INSTALL_INTELIJ=0
+INSTALL_GIT=0
+INSTALL_ROBOMONGO=0
+INSTALL_CUDA=0
+INSTALL_CUDNN=0
+INSTALL_TENSORFLOW_GPU=0
+
+while true; do
+    read -p "Do you wish to install PHPSTORM (y/n)" yn
+    case $yn in
+        [Yy]* ) INSTALL_PHPSTORM=1; break;;
+        [Nn]* ) INSTALL_PHPSTORM=0; break;;
+        * ) echo "Please answer yes or no.";;
+    esac
+done
+
+while true; do
+    read -p "Do you wish to install WEBSTORM (y/n)" yn
+    case $yn in
+        [Yy]* ) INSTALL_WEBSTORM=1; break;;
+        [Nn]* ) INSTALL_WEBSTORM=0; break;;
+        * ) echo "Please answer yes or no.";;
+    esac
+done
+
+while true; do
+    read -p "Do you wish to install PYCHARM (y/n)" yn
+    case $yn in
+        [Yy]* ) INSTALL_PYCHARM=1; break;;
+        [Nn]* ) INSTALL_PYCHARM=0; break;;
+        * ) echo "Please answer yes or no.";;
+    esac
+done
+
+while true; do
+    read -p "Do you wish to install INTELIJ (y/n)" yn
+    case $yn in
+        [Yy]* ) INSTALL_INTELIJ=1; break;;
+        [Nn]* ) INSTALL_INTELIJ=0; break;;
+        * ) echo "Please answer yes or no.";;
+    esac
+done
+
+while true; do
+    read -p "Do you wish to install MONGO DB (y/n)" yn
+    case $yn in
+        [Yy]* ) INSTALL_MONGODB=1; break;;
+        [Nn]* ) INSTALL_MONGODB=0; break;;
+        * ) echo "Please answer yes or no.";;
+    esac
+done
+
+while true; do
+    read -p "Do you wish to install GIT (y/n)" yn
+    case $yn in
+        [Yy]* ) INSTALL_GIT=1; break;;
+        [Nn]* ) INSTALL_GIT=0; break;;
+        * ) echo "Please answer yes or no.";;
+    esac
+done
+
+while true; do
+    read -p "Do you wish to install ROBOMONGO (y/n)" yn
+    case $yn in
+        [Yy]* ) INSTALL_ROBOMONGO=1; break;;
+        [Nn]* ) INSTALL_ROBOMONGO=0; break;;
+        * ) echo "Please answer yes or no.";;
+    esac
+done
+
+while true; do
+    read -p "Do you wish to install CUDA (y/n)" yn
+    case $yn in
+        [Yy]* ) INSTALL_CUDA=1; break;;
+        [Nn]* ) INSTALL_CUDA=0; break;;
+        * ) echo "Please answer yes or no.";;
+    esac
+done
+
+while true; do
+    read -p "Do you wish to install CUDNN (y/n)" yn
+    case $yn in
+        [Yy]* ) INSTALL_CUDNN=1; break;;
+        [Nn]* ) INSTALL_CUDNN=0; break;;
+        * ) echo "Please answer yes or no.";;
+    esac
+done
+
+while true; do
+    read -p "Do you wish to install INSTALL TENSORFLOW GPU (y/n)" yn
+    case $yn in
+        [Yy]* ) INSTALL_TENSORFLOW_GPU=1; break;;
+        [Nn]* ) INSTALL_TENSORFLOW_GPU=0; break;;
+        * ) echo "Please answer yes or no.";;
+    esac
+done
+
+########################################################################################
+if [ $INSTALL_GIT -eq 1 ]
+then
+echo "${RD}Installing Git${WC}"
+apt-get -y install git
+fi
+
+########################################################################################
+
+if [ $INSTALL_MONGODB -eq 1 ]
+then
+echo "${RD}Installong MongoDB${WC}"
+
+apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
+
+apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14518585931BC711F9BA15703C6
+
+echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-3.2.list
+
+apt-get update
+apt-get install -y mongodb-org
+
+echo "[Unit]
+Description=High-performance, schema-free document-oriented database
+After=network.target
+
+[Service]
+User=mongodb
+ExecStart=/usr/bin/mongod --quiet --config /etc/mongod.conf
+
+[Install]
+WantedBy=multi-user.target" > /etc/systemd/system/mongodb.service
+
+sudo systemctl start mongodb
+sudo systemctl enable mongodb
+fi
+########################################################################################
+
+if [ $INSTALL_ROBOMONGO -eq 1 ]
+then
+
+echo "${RD}Robo3T Mongo${WC}"
+apt-get install xcb
+wget "https://download.robomongo.org/1.1.1/linux/robo3t-1.1.1-linux-x86_64-c93c6b0.tar.gz"
+tar -xvzf "robo3t-1.1.1-linux-x86_64-c93c6b0.tar.gz" 
+mkdir /usr/local/bin/robomongo
+mv robo3t-1.1.1-linux-x86_64-c93c6b0/* /usr/local/bin/robomongo
+chmod +x  /usr/local/bin/robomongo/bin/robo3t
+rm -r /usr/local/bin/robomongo/lib/libstdc++.so.6
+x-terminal-emulator -e /usr/local/bin/robomongo/bin/robo3t
+
+rm -r robo3t-1.1.1-linux-x86_64-c93c6b0
+rm robo3t-1.1.1-linux-x86_64-c93c6b0.tar.gz
+fi
+
+########################################################################################
+
+if [ $INSTALL_PHPSTORM -eq 1 ]
+then
+echo "${RD}Installing PhpStorm${WC}"
+wget 'https://download.jetbrains.com/webide/PhpStorm-2017.2.4.tar.gz'
+mkdir /usr/local/bin/phpstorm
+tar xf PhpStorm-2017.2.4.tar.gz -C /usr/local/bin/phpstorm --strip-components=1
+x-terminal-emulator -e /usr/local/bin/phpstorm/bin/phpstorm.sh
+fi
+
+########################################################################################
+
+if [ $INSTALL_WEBSTORM -eq 1 ]
+then
+echo "${RD}Installing WebStorm${WC}"
+wget 'https://download.jetbrains.com/webstorm/WebStorm-2017.2.4.tar.gz'
+mkdir /usr/local/bin/webstorm
+tar xf WebStorm-2017.2.4.tar.gz -C /usr/local/bin/webstorm --strip-components=1
+x-terminal-emulator -e /usr/local/bin/webstorm/bin/webstorm.sh
+fi
+
+########################################################################################
+if [ $INSTALL_CUDA -eq 1 ]
+then
+echo "${RD}Installing Cuda${WC}"
+
+if ! type "gcc" > /dev/null; then
+sudo apt-get update
+sudo apt install gcc
+fi
+
+
+
+sudo apt-get install linux-headers-$(uname -r)
+sudo wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/cuda-repo-ubuntu1604_8.0.61-1_amd64.deb -P ~/Downloads/
+sudo dpkg -i ~/Downloads/cuda-repo-ubuntu1604_8.0.61-1_amd64.deb
+sudo apt-get update
+sudo apt-get install cuda-8-0
+echo 'export CUDA_HOME=/usr/local/cuda-8.0' >> ~/.bashrc 
+echo 'export LD_LIBRARY_PATH=${CUDA_HOME}/lib64' >> ~/.bashrc
+echo 'PATH=${CUDA_HOME}/bin:${PATH}' >> ~/.bashrc
+echo 'export PATH' >> ~/.bashrc
+rm -rf ~/Downloads/cuda-repo-ubuntu1604_8.0.61-1_amd64.deb
+fi
+
+########################################################################################
+
+if [ $INSTALL_CUDNN -eq 1 ]
+then
+sudo wget https://s3.amazonaws.com/data-twohz/packages/cudnn-8.0-linux-x64-v6.0.tgz -P ~/Downloads/
+tar -xvzf ~/Downloads/cudnn-8.0-linux-x64-v6.0.tgz --directory ~/Downloads/
+CURRENT_DIR=$(pwd)
+cd ~/Downloads/cuda/
+sudo cp -P include/cudnn.h /usr/local/cuda-8.0/
+sudo cp -P lib64/libcudnn* /usr/lib/x86_64-linux-gnu/
+sudo chmod a+r /usr/lib/x86_64-linux-gnu/libcudnn*
+rm -rf ~/Downloads/cuda
+rm -rf ~/Downloads/cudnn-8.0-linux-x64-v6.0.tg
+cd $CURRENT_DIR
+fi
+
+
+########################################################################################
+if [ $INSTALL_TENSORFLOW_GPU -eq 1 ]
+then
+sudo apt-get install libcupti-dev
+sudo apt-get install python3-pip python3-dev
+pip3 install tensorflow-gpu
+fi
+bash
+
